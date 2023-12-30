@@ -212,3 +212,37 @@ if ($sizemb -gt 200)
  
 
 Send-MailMessage -From $from -to $to -Subject $Subject -Body $body -Body AsHtml -SmtpServer $smtpServer -Port $smtpPort -UseSsl -Credential $cred 
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+I have created a solutioning for Always on E-Mail Alerts when ever there is failover on primary db server:
+
+1.Job is created to check the Primary server This job is related to Failover Alert Mail , This job checks which server is primary .Schedule is every 2min 
+-----------------------------------------------------------------------------------------------------------------------------------------
+if exists(select is_local, role_desc from sys.dm_hadr_availability_replica_states where role = 1 and role_desc = 'PRIMARY') begin
+print 'This server [' + upper(@@servername) + '] is the primary.' 
+EXEC msdb.dbo.sp_update_job @job_name='Failover Alert Mail',@enabled = 1; 
+end
+else
+EXEC msdb.dbo.sp_update_job @job_name='Failover Alert Mail',@enabled = 0;
+--------------------------------------------------------------------------------------------------------------------------------------------
+2.Job Primary Failover Mail Alert Schedule Every 2 Min
+
+This is our DBA Primary Failover Alert 
+--------------------------------------------------------------------------------------------------------------------------------------------
+if exists(select is_local, role_desc from sys.dm_hadr_availability_replica_states where role = 1 and role_desc = 'PRIMARY') begin
+print 'This server [' + upper(@@servername) + '] is the primary.' end
+else
+BEGIN
+
+EXEC msdb.dbo.sp_send_dbmail
+  @recipients=N's.r@gmail.com;d.r@gmail.com',
+  @body='Failover happened on Serverxxxx-x', 
+  @subject ='Failover  happened on primary Serverxxxx-x',
+  @profile_name ='sqldba'
+  
+
+END
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
