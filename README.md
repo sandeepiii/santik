@@ -8,7 +8,7 @@ SQL DBA Monitoring scripts and when ever i create any scripts will be keeping it
 # This script will give alerts for disk space if threshold is breached or above the threshold
 #########################################################
  
-$users = "srathor2@hertz.com" # List of users to email your report to (separate by comma)
+$users = "sra@gmail.com" # List of users to email your report to (separate by comma)
 $fromemail = "no-reply@pnd.io"
 $server = "email-smtp.us-.com" #enter your own SMTP server DNS name / IP address here
 $smtpPort = '587'
